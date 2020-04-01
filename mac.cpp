@@ -1,55 +1,56 @@
 #include "mac.h"
 
-Mac::Mac(const char* r) {
-    int i;
-    uint8_t* p;
-    uint8_t ch1, ch2;
-
-    p = reinterpret_cast<u_char*>(const_cast<char*>(r));
-    for (i = 0 ; i < SIZE; i++) {
-        ch1 = *p++;
-        if (ch1 >= 'a')
-            ch1 = ch1 - 'a' + 10;
-        else
-            if (ch1 >= 'A')
-                ch1 = ch1 - 'A' + 10;
-            else
-                ch1 = ch1 - '0';
-        ch2 = *p++;
-        if (ch2 >= 'a')
-            ch2 = ch2 - 'a' + 10;
-        else if (ch2 >= 'A')
-            ch2 = ch2 - 'A' + 10;
-        else
-            ch2 = ch2 - '0';
-        mac_[i] = static_cast<uint8_t>((ch1 << 4) + ch2);
-        while (*p == '-' || *p == ':') p++;
-    }
+Mac::Mac(const std::string r) {
+	unsigned int a, b, c, d, e, f;
+	int res = sscanf(r.c_str(), "%02X:%02X:%02X:%02X:%02X:%02X", &a, &b, &c, &d, &e, &f);
+	if (res != SIZE) {
+		fprintf(stderr, "Mac::Mac sscanf return %d r=%s\n", res, r.c_str());
+		return;
+	}
+	mac_[0] = a;
+	mac_[1] = b;
+	mac_[2] = c;
+	mac_[3] = d;
+	mac_[4] = e;
+	mac_[5] = f;
 }
 
 Mac::operator std::string() const {
-    uint8_t ch1, ch2;
-    int i, index;
-    char buf[SIZE * 3]; // enough size
-
-    index = 0;
-    for (i = 0; i < SIZE; i++) {
-        ch1 = mac_[i] & 0xF0;
-        ch1 = ch1 >> 4;
-        if (ch1 > 9)
-            ch1 = ch1 + 'A' - 10;
-        else
-            ch1 = ch1 + '0';
-        ch2 = mac_[i] & 0x0F;
-        if (ch2 > 9)
-            ch2 = ch2 + 'A' - 10;
-        else
-            ch2 = ch2 + '0';
-        buf[index++] = char(ch1);
-        buf[index++] = char(ch2);
-        if (i == 2)
-            buf[index++] = '-';
-    }
-    buf[index] = '\0';
-    return (std::string(reinterpret_cast<char*>(buf)));
+	char buf[32]; // enough size
+	sprintf(buf, "%02x:%02X:%02X:%02X:%02X:%02X",
+		mac_[0],
+		mac_[1],
+		mac_[2],
+		mac_[3],
+		mac_[4],
+		mac_[5]);
+	return std::string(buf);
 }
+
+#ifdef GTEST
+#include <gtest/gtest.h>
+
+TEST(Mac, ctorTest) {
+	Mac mac1; // Mac()
+
+	uint8_t buf[] = {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC};
+	Mac mac2(buf); // Mac(const std::string r)
+
+	Mac mac3("12:34:56:78:9A:BC"); // Mac(const std::string r)
+
+	EXPECT_EQ(mac2, mac3);
+}
+
+TEST(Mac, castingTest) {
+   Mac mac("12:34:56:78:9A:BC");
+
+   uint8_t buf[Mac::SIZE];
+   memcpy(buf, mac, Mac::SIZE); // operator uint8_t*()
+   EXPECT_TRUE(memcmp(buf, mac, Mac::SIZE) == 0);
+
+   std::string s = std::string(mac); // explicit operator std::string()
+
+   EXPECT_EQ(s, "12:34:56:78:9A:BC");
+}
+
+#endif // GTEST
