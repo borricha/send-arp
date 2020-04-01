@@ -5,20 +5,20 @@
 #include <string>
 
 struct Mac final {
-    static const int SIZE = 6;
+	static const int SIZE = 6;
 
-    //
-    // constructor
-    //
-    Mac() {}
-    Mac(const uint8_t* r) { memcpy(this->mac_, r, SIZE); }
-    Mac(const std::string r);
+	//
+	// constructor
+	//
+	Mac() {}
+	Mac(const uint8_t* r) { memcpy(this->mac_, r, SIZE); }
+	Mac(const std::string r);
 
-    //
-    // casting operator
-    //
-    operator uint8_t*() const { return const_cast<uint8_t*>(mac_); } // default
-    explicit operator std::string() const;
+	//
+	// casting operator
+	//
+	operator uint8_t*() const { return const_cast<uint8_t*>(mac_); } // default
+	explicit operator std::string() const;
 
 	//
 	// comparison operator
@@ -26,5 +26,5 @@ struct Mac final {
 	bool operator == (const Mac& r) const { return memcmp(mac_, r.mac_, SIZE) == 0; }
 
 protected:
-    uint8_t mac_[SIZE];
+	uint8_t mac_[SIZE];
 };

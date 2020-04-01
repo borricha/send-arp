@@ -42,15 +42,15 @@ TEST(Mac, ctorTest) {
 }
 
 TEST(Mac, castingTest) {
-   Mac mac("12:34:56:78:9A:BC");
+	Mac mac("12:34:56:78:9A:BC");
 
-   uint8_t buf[Mac::SIZE];
-   memcpy(buf, mac, Mac::SIZE); // operator uint8_t*()
-   EXPECT_TRUE(memcmp(buf, mac, Mac::SIZE) == 0);
+	uint8_t buf[Mac::SIZE];
+	memcpy(buf, mac, Mac::SIZE); // operator uint8_t*()
+	EXPECT_TRUE(memcmp(buf, mac, Mac::SIZE) == 0);
 
-   std::string s = std::string(mac); // explicit operator std::string()
+	std::string s = std::string(mac); // explicit operator std::string()
 
-   EXPECT_EQ(s, "12:34:56:78:9A:BC");
+	EXPECT_EQ(s, "12:34:56:78:9A:BC");
 }
 
 #endif // GTEST
