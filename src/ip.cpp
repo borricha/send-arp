@@ -1,8 +1,6 @@
 #include "ip.h"
 #include <cstdio>
 
-using namespace std;
-
 Ip::Ip(const std::string r) {
 	unsigned int a, b, c, d;
 	int res = sscanf(r.c_str(), "%u.%u.%u.%u", &a, &b, &c, &d);
