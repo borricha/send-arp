@@ -34,7 +34,7 @@ TEST(Mac, ctorTest) {
 	Mac mac1; // Mac()
 
 	uint8_t buf[] = {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC};
-	Mac mac2(buf); // Mac(const std::string r)
+	Mac mac2(buf); // Mac(const uint8_t* r)
 
 	Mac mac3("12:34:56:78:9A:BC"); // Mac(const std::string r)
 
