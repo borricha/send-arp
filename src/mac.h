@@ -24,6 +24,8 @@ struct Mac final {
 	// comparison operator
 	//
 	bool operator == (const Mac& r) const { return memcmp(mac_, r.mac_, SIZE) == 0; }
+	bool operator != (const Mac& r) const { return memcmp(mac_, r.mac_, SIZE) != 0; }
+	bool operator < (const Mac& r) const { return memcmp(mac_, r.mac_, SIZE) < 0; }
 
 protected:
 	uint8_t mac_[SIZE];

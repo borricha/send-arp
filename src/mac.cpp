@@ -33,16 +33,16 @@ Mac::operator std::string() const {
 TEST(Mac, ctorTest) {
 	Mac mac1; // Mac()
 
-	uint8_t buf[] = {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC};
+	uint8_t buf[] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
 	Mac mac2(buf); // Mac(const uint8_t* r)
 
-	Mac mac3("12:34:56:78:9A:BC"); // Mac(const std::string r)
+	Mac mac3("00:11:22:33:44:55"); // Mac(const std::string r)
 
 	EXPECT_EQ(mac2, mac3);
 }
 
 TEST(Mac, castingTest) {
-	Mac mac("12:34:56:78:9A:BC");
+	Mac mac("00:11:22:33:44:55");
 
 	uint8_t buf[Mac::SIZE];
 	memcpy(buf, mac, Mac::SIZE); // operator uint8_t*()
@@ -50,7 +50,17 @@ TEST(Mac, castingTest) {
 
 	std::string s = std::string(mac); // explicit operator std::string()
 
-	EXPECT_EQ(s, "12:34:56:78:9A:BC");
+	EXPECT_EQ(s, "00:11:22:33:44:55");
+}
+
+TEST(Mac, operatorTest) {
+	Mac mac1("00:11:22:33:44:55");
+	Mac mac2("00:11:22:33:44:55");
+	Mac mac3("00:11:22:33:44:56");
+
+	EXPECT_TRUE(mac1 == mac2);
+	EXPECT_TRUE(mac1 != mac3);
+	EXPECT_TRUE(mac1 < mac3);
 }
 
 #endif // GTEST
