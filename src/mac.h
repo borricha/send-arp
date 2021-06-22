@@ -8,42 +8,30 @@
 // Mac
 // ----------------------------------------------------------------------------
 struct Mac final {
-public:
 	static constexpr int SIZE = 6;
 
-protected:
-	uint8_t mac_[SIZE];
-
-public:
-	//
 	// constructor
-	//
 	Mac() {}
-	Mac(const Mac& rhs) { memcpy(this->mac_, rhs.mac_, SIZE); }
-	Mac(const uint8_t* rhs) { memcpy(this->mac_, rhs, SIZE); }
-	Mac(const std::string& rhs);
+	Mac(const Mac& r) { memcpy(this->mac_, r.mac_, SIZE); }
+	Mac(const uint8_t* r) { memcpy(this->mac_, r, SIZE); }
+	Mac(const std::string& r);
 
 	// assign operator
-	Mac& operator = (const Mac& rhs) { memcpy(this->mac_, rhs.mac_, SIZE); return *this; }
+	Mac& operator = (const Mac& r) { memcpy(this->mac_, r.mac_, SIZE); return *this; }
 
-	//
 	// casting operator
-	//
 	explicit operator uint8_t*() const { return const_cast<uint8_t*>(mac_); }
 	explicit operator std::string() const;
 
-	//
 	// comparison operator
-	//
-	bool operator == (const Mac& rhs) const { return memcmp(mac_, rhs.mac_, SIZE) == 0; }
-	bool operator != (const Mac& rhs) const { return memcmp(mac_, rhs.mac_, SIZE) != 0; }
-	bool operator < (const Mac& rhs) const { return memcmp(mac_, rhs.mac_, SIZE) < 0; }
-	bool operator > (const Mac& rhs) const { return memcmp(mac_, rhs.mac_, SIZE) > 0; }
-	bool operator <= (const Mac& rhs) const { return memcmp(mac_, rhs.mac_, SIZE) <= 0; }
-	bool operator >= (const Mac& rhs) const { return memcmp(mac_, rhs.mac_, SIZE) >= 0; }
-	bool operator == (const uint8_t* rhs) const { return memcmp(mac_, rhs, SIZE) == 0; }
+	bool operator == (const Mac& r) const { return memcmp(mac_, r.mac_, SIZE) == 0; }
+	bool operator != (const Mac& r) const { return memcmp(mac_, r.mac_, SIZE) != 0; }
+	bool operator < (const Mac& r) const { return memcmp(mac_, r.mac_, SIZE) < 0; }
+	bool operator > (const Mac& r) const { return memcmp(mac_, r.mac_, SIZE) > 0; }
+	bool operator <= (const Mac& r) const { return memcmp(mac_, r.mac_, SIZE) <= 0; }
+	bool operator >= (const Mac& r) const { return memcmp(mac_, r.mac_, SIZE) >= 0; }
+	bool operator == (const uint8_t* r) const { return memcmp(mac_, r, SIZE) == 0; }
 
-public:
 	void clear() {
 		*this = nullMac();
 	}
@@ -63,16 +51,16 @@ public:
 	static Mac randomMac();
 	static Mac& nullMac();
 	static Mac& broadcastMac();
+
+protected:
+	uint8_t mac_[SIZE];
 };
 
 namespace std {
 	template<>
 	struct hash<Mac> {
-		size_t operator() (const Mac & rhs) const {
-			uint8_t* p = (uint8_t*)rhs;
-			uint16_t* p1 = (uint16_t*)p;
-			uint32_t* p2 = (uint32_t*)(p + 2);
-			return *p1 + *p2;
+		size_t operator() (const Mac& r) const {
+			return std::_Hash_impl::hash(&r, Mac::SIZE);
 		}
 	};
 }

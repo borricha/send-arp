@@ -50,14 +50,14 @@ static constexpr uint8_t _temp[] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
 TEST(Mac, ctorTest) {
 	Mac mac1; // ()
 
-	Mac mac2{mac1}; // (const Mac& rhs)
+	Mac mac2{mac1}; // (const Mac& r)
 
-	Mac mac3(_temp); // (const uint8_t* rhs)
+	Mac mac3(_temp); // (const uint8_t* r)
 
-	Mac mac4(std::string("001122-334455")); // (const std::string& rhs)
+	Mac mac4(std::string("001122-334455")); // (const std::string& r)
 	EXPECT_EQ(mac3, mac4);
 
-	Mac mac5("001122-334455"); // (const std::string& rhs)
+	Mac mac5("001122-334455"); // (const std::string& r)
 	EXPECT_EQ(mac3, mac5);
 }
 
