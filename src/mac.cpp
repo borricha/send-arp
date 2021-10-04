@@ -8,14 +8,15 @@ Mac::Mac(const std::string& r) {
 	}
 	int res = sscanf(s.c_str(), "%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx", &mac_[0], &mac_[1], &mac_[2], &mac_[3], &mac_[4], &mac_[5]);
 	if (res != SIZE) {
-		fprintf(stderr, "Mac::Mac sscanf return %d r=%s\n", res, r.c_str());
+		fprintf(stderr, "Mac::Mac sscanf return %d r =%s\n", res, r.c_str());
 		return;
 	}
+	 
 }
 
 Mac::operator std::string() const {
 	char buf[20]; // enough size
-	sprintf(buf, "%02x:%02X:%02X:%02X:%02X:%02X", mac_[0], mac_[1], mac_[2], mac_[3], mac_[4], mac_[5]);
+	sprintf(buf, "%02X:%02X:%02X:%02X:%02X:%02X", mac_[0], mac_[1], mac_[2], mac_[3], mac_[4], mac_[5]);
 	return std::string(buf);
 }
 
