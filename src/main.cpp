@@ -188,9 +188,5 @@ Mac get_sender_mac(pcap_t* handle, Ip sender_IP)
          printf("찾는중.... %s \n", std::string(sender_packet->arp_.sip_).data());
          continue;
       }
-      
-      
-
    }
-
 }
